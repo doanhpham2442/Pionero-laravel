@@ -32,3 +32,6 @@ Route::post('users/store', [UserController::class, 'store']);
 Route::get('users/edit/{id}', [UserController::class, 'edit'])->where('id', '[0-9]+');
 Route::post('users/update/{id}', [UserController::class, 'update'])->where('id', '[0-9]+');
 Route::get('users/delete/{id}', [UserController::class, 'delete'])->where('id', '[0-9]+');
+
+
+

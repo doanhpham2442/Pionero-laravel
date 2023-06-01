@@ -25,6 +25,9 @@ class UserController extends Controller
     public function show($id)
     {
         $users = DB::table('users')->where('id', $id)->first();
+        if (!$user) {
+            return redirect()->route('users.index')->with('error', 'Không tồn tại user');
+        }
         $template = 'user.show';
         return view('dashboard.layout.home', compact('template', 'users'));
     }
@@ -50,6 +53,9 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = DB::table('users')->where('id', $id)->first();
+        if (!$user) {
+            return redirect()->route('users.index')->with('error', 'Không tồn tại user');
+        }
         $method = 'edit';
         $template = 'user.store';
         return view('dashboard.layout.home', compact('template', 'user', 'method'));
@@ -70,7 +76,10 @@ class UserController extends Controller
     {
         // $user = DB::table('users')->where('id', $id)->first();
         // if (isset($_POST) && is_array($_POST) && count($_POST)) {
-            DB::table('users')->where('id', $id)->delete();
+            $user = DB::table('users')->where('id', $id)->delete();
+            if (!$user) {
+                return redirect()->route('users.index')->with('error', 'Không tồn tại user');
+            }
             return redirect()->route('users.index')->with('success', 'Xóa người dùng thành công');
         // }
         // $method = 'delete';

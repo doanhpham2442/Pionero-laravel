@@ -38,7 +38,7 @@
                     <input type="password" class="form-control" name="password"  placeholder="Password" value = "{{isset($user->password) ? $user->password : ''}}">
                 </div>
                 <div class="form-group col-12">
-                    <button type="submit" class="btn btn-primary">Cập nhật thông tin</button>
+                    <button type="submit" class="btn btn-primary">{{($method == 'create') ? 'Lưu thông tin' : 'Cập nhật thông tin'}}</button>
                 </div>
                 
             </form>

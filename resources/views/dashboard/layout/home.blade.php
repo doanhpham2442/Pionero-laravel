@@ -16,10 +16,10 @@
 </head>
 
 <body>
-    @if (session('success'))
+    @if (session('success') || session('error'))
         <div id="notification">
-            <div class="alert alert-success">
-                {{ session('success') }}
+            <div class="alert alert-{{ null !== session('success') ? 'success' : 'danger' }}">
+                {{ session('success') ?? session('error') }}
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             </div>
         </div>
