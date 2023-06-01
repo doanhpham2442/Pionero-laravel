@@ -1,7 +1,13 @@
 <div class="container">
     <div class="row">
         <div class="col-12">
-            <table class="table">
+            <h2 class="heading-2">
+                Thông tin tất cả User
+            </h2>
+        </div>
+        <div class="col-12">
+            <a href="{{url('users/create')}}" title="" class="btn btn-success btn-add" >Thêm mới User</a>
+            <table class="table table-striped">
                 <thead>
                     <tr>
                     <th scope="col">Id</th>
@@ -14,13 +20,14 @@
                 <tbody>
                 @foreach ($users as $key => $val)
                     <tr>
-                        <th scope="row">{{$val['id']}}</th>
-                        <td>{{$val['name']}}</td>
-                        <td>{{$val['email']}}</td>
-                        <td>{{$val['phone']}}</td>
+                        <th scope="row">{{$val->id}}</th>
+                        <td>{{$val->name}}</td>
+                        <td>{{$val->email}}</td>
+                        <td>{{$val->phone}}</td>
                         <td>
-                            <a href="{{$_SERVER['REQUEST_URI']}}/{{$val['id']}}" class="btn btn-warning" >Chi tiết</a>
-                            <button type="button" class="btn btn-danger">Xóa</button>
+                            <a href="{{url('users/'.$val->id.'')}}" class="btn btn-primary" >Chi tiết</a>
+                            <a href="{{url('users/edit/'.$val->id.'')}}" class="btn btn-warning" >Sửa</a>
+                            <a href="{{url('users/delete/'.$val->id.'')}}" class="btn btn-danger" >Xóa</a>
                         </td>
                     </tr>
                 @endforeach
