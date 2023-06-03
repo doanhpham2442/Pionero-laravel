@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,12 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::get('/users/{id?}', function ($id = null) {
+    if (isset($id)) {
+        return app(UserController::class)->edit($id);
+    } else {
+        return app(UserController::class)->index();
+    }
+})->where('id', '[0-9]+');
