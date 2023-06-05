@@ -31,6 +31,7 @@ class StoreUserRequest extends FormRequest
             ],
             'email' => [
                 'required',
+                'unique:users,email,' . $this->id,
             ],
             'phone' => [
                 'required',
@@ -45,8 +46,8 @@ class StoreUserRequest extends FormRequest
         return [
             'name.required' => 'Tên không được để trống',
             'email.required' => 'Email không được để trống',
+            'email.unique' => 'Email đã tồn tại',
             'phone.required' => 'Số điện thoại không được để trống',
-            
         ];
     }
 

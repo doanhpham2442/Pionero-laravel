@@ -32,11 +32,12 @@ Route::middleware('api')->group(function () {
     Route::group(['middleware' => 'jwt.auth'], function () {
         Route::get('user', [UserController::class, 'userInfo']);
         
-        Route::get('users', [UserController::class, 'index']);
-        Route::post('users', [UserController::class, 'store']);
-        Route::get('users/{id}', [UserController::class, 'show'])->where('id', '[0-9]+');
-        Route::put('users/{id}', [UserController::class, 'update'])->where('id', '[0-9]+');
-        Route::delete('users/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+');
+        
     });
+    Route::get('users', [UserController::class, 'index']);
+    Route::post('users', [UserController::class, 'store']);
+    Route::get('users/{id}', [UserController::class, 'show'])->where('id', '[0-9]+');
+    Route::put('users/{id}', [UserController::class, 'update'])->where('id', '[0-9]+');
+    Route::delete('users/{id}', [UserController::class, 'destroy'])->where('id', '[0-9]+');
 });
 

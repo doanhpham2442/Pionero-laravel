@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
     {
 
         $faker = Faker::create();
-        $limit = 10;
+        $limit = 30;
 
         for ($i = 0; $i < $limit; $i++){
             DB::table('users')->insert([
