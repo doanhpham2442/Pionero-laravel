@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use JWTAuth;
 use JWTAuthException;
 use Hash;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\User;
 
 class UserController extends Controller
 {   
@@ -18,14 +21,14 @@ class UserController extends Controller
     }
    
     public function register(Request $request){
-        $user = DB::table('users')->insert([
+        $user = User::create([
           'name' => $request->get('name'),
           'email' => $request->get('email'),
           'password' => Hash::make($request->get('password')),
         ]);
 
         return response()->json([
-            'status'=> 200,
+            'status'=>  Response::HTTP_OK,
             'message'=> 'User created successfully',
             'data'=>$user
         ]);
@@ -36,10 +39,10 @@ class UserController extends Controller
         $token = null;
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['invalid_email_or_password'], 422);
+                return response()->json(['invalid_email_or_password'], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         } catch (JWTAuthException $e) {
-            return response()->json(['failed_to_create_token'], 500);
+            return response()->json(['failed_to_create_token'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return response()->json(compact('token'));
     }
@@ -48,23 +51,26 @@ class UserController extends Controller
         $user = JWTAuth::toUser($request->token);
         return response()->json(['result' => $user]);
     }
+
     public function index()
     {
-        $users = DB::table('users')->get();
+        $users = User::all();
         $template = 'user.index';
-        return response()->json(['data' => $users], 200);
+        return response()->json(['data' => $users], Response::HTTP_OK);
     }
+    
     public function show($id)
     {
-        $users = DB::table('users')->where('id', $id)->first();
-        if (!$users) {
-            return response()->json(['message' => 'Không tồn tại User'], 404);
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
-        return response()->json(['data' => $users], 200);
+        return response()->json(['data' => $user], Response::HTTP_OK);
     }
+
     public function store(StoreUserRequest $request)
     {
-        $user = DB::table('users')->insert([
+        $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
@@ -72,29 +78,39 @@ class UserController extends Controller
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
-        return response()->json(['data' => $user], 201);
+        return response()->json(['message' => 'Tạo mới thành công User'], Response::HTTP_OK);
     }
+    
     public function update(StoreUserRequest $request, $id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
+        $user = User::find($id);
         if (!$user) {
-            return response()->json(['message' => 'Không tồn tại User'], 404);
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
-        $user = DB::table('users')->where('id', $id)->update([
+        $update = User::where('id', $id)->update([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
             'password' => bcrypt($request->input('password')),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
-        return response()->json(['data' => $user], 200);
+        
+        return response()->json(['message' => 'Cập nhật thành công User'], Response::HTTP_OK);
     }
+    
     public function destroy($id)
-    {
-        $user = DB::table('users')->where('id', $id)->delete();
+    {  
+        $user = User::find($id);
         if (!$user) {
-            return response()->json(['message' => 'Không tồn tại User'], 404);
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
-        return response()->json(['message' => 'Xóa thành công User'], 200);
+        else{
+            $deleted = User::destroy($id);
+            if ($deleted) {
+                return response()->json(['message' => 'Xóa thành công User'], Response::HTTP_OK);
+            } else {
+                return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
+            }
+        }
     }
 }  
