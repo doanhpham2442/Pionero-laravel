@@ -18,19 +18,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                @foreach ($users as $key => $val)
+                @if(isset($users) && count($users))
+                    @foreach ($users as $key => $val)
+                        <tr>
+                            <th scope="row">{{$val->id}}</th>
+                            <td>{{$val->name}}</td>
+                            <td>{{$val->email}}</td>
+                            <td>{{$val->phone}}</td>
+                            <td>
+                                <a href="{{url('users/'.$val->id)}}" class="btn btn-primary">Chi tiết</a>
+                                <a href="{{url('users/edit/'.$val->id)}}" class="btn btn-warning">Sửa</a>
+                                <a href="{{url('users/delete/'.$val->id)}}" class="btn btn-danger">Xóa</a>
+                            </td>
+                        </tr>
+                    @endforeach
+                @else
                     <tr>
-                        <th scope="row">{{$val->id}}</th>
-                        <td>{{$val->name}}</td>
-                        <td>{{$val->email}}</td>
-                        <td>{{$val->phone}}</td>
-                        <td>
-                            <a href="{{url('users/'.$val->id.'')}}" class="btn btn-primary" >Chi tiết</a>
-                            <a href="{{url('users/edit/'.$val->id.'')}}" class="btn btn-warning" >Sửa</a>
-                            <a href="{{url('users/delete/'.$val->id.'')}}" class="btn btn-danger" >Xóa</a>
-                        </td>
+                        <td colspan="5">Không có bản ghi nào!</td>
                     </tr>
-                @endforeach
+                @endif
                 </tbody>
             </table>
         </div>

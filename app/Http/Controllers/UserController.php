@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use App\Http\Requests\StoreUserRequest;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -18,28 +19,31 @@ class UserController extends Controller
 
     public function index()
     {
-        $users = DB::table('users')->get();
+        $users = User::all();
         $template = 'user.index';
         return view('dashboard.layout.home', compact('template', 'users'));
     }
+
     public function show($id)
     {
-        $users = DB::table('users')->where('id', $id)->first();
+        $user = User::find($id);
         if (!$user) {
             return redirect()->route('users.index')->with('error', 'Không tồn tại user');
         }
         $template = 'user.show';
-        return view('dashboard.layout.home', compact('template', 'users'));
+        return view('dashboard.layout.home', compact('template', 'user'));
     }
+
     public function create()
     {
         $method = 'create';
         $template = 'user.store';
         return view('dashboard.layout.home', compact('template', 'method'));
     }
+
     public function store(StoreUserRequest $request)
     {
-        DB::table('users')->insert([
+        $user = User::create([
             'name' => $request->input('name'),
             'email' => $request->input('email'),
             'phone' => $request->input('phone'),
@@ -52,7 +56,7 @@ class UserController extends Controller
 
     public function edit($id)
     {
-        $user = DB::table('users')->where('id', $id)->first();
+        $user = User::find($id);
         if (!$user) {
             return redirect()->route('users.index')->with('error', 'Không tồn tại user');
         }
@@ -60,30 +64,33 @@ class UserController extends Controller
         $template = 'user.store';
         return view('dashboard.layout.home', compact('template', 'user', 'method'));
     }
+
     public function update(StoreUserRequest $request, $id)
     {
         $id = (int) $id;
-        DB::table('users')->where('id', $id)->update([
-                'name' => $request->input('name'),
-                'email' => $request->input('email'),
-                'phone' => $request->input('phone'),
-                'password' => bcrypt($request->input('password')),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
+        $update = User::where('id', $id)->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+            'phone' => $request->input('phone'),
+            'password' => bcrypt($request->input('password')),
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
         return redirect()->route('users.index')->with('success', 'Thêm mới người dùng thành công');
     }
+
     public function delete($id)
     {
-        // $user = DB::table('users')->where('id', $id)->first();
-        // if (isset($_POST) && is_array($_POST) && count($_POST)) {
-            $user = DB::table('users')->where('id', $id)->delete();
-            if (!$user) {
+        $user = User::find($id);
+        if (!$user) {
+            return redirect()->route('users.index')->with('error', 'Không tồn tại user');
+        }
+        else{
+            $deleted = User::destroy($id);
+            if ($deleted) {
+                return redirect()->route('users.index')->with('success', 'Xóa người dùng thành công');
+            } else {
                 return redirect()->route('users.index')->with('error', 'Không tồn tại user');
             }
-            return redirect()->route('users.index')->with('success', 'Xóa người dùng thành công');
-        // }
-        // $method = 'delete';
-        // $template = 'user.delete';
-        // return view('dashboard.layout.home', compact('template', 'user', 'method'));
+        }            
     }
 }

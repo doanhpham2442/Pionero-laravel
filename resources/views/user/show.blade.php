@@ -2,7 +2,7 @@
     <div class="row">
         <div class="col-12">
             <h2 class="heading-2">
-                Thông tin chi tiết: {{$users->name}}
+                Thông tin chi tiết: {{$user->name}}
             </h2>
         </div>
         <div class="col-12">
@@ -18,13 +18,13 @@
             </thead>
             <tbody>
                 <tr>
-                    <th scope="row">{{$users->id}}</th>
-                    <td>{{$users->name}}</td>
-                    <td>{{$users->email}}</td>
-                    <td>{{$users->phone}}</td>
+                    <th scope="row">{{$user->id}}</th>
+                    <td>{{$user->name}}</td>
+                    <td>{{$user->email}}</td>
+                    <td>{{$user->phone}}</td>
                     <td>
-                        <a href="{{url('users/edit/'.$users->id.'')}}" class="btn btn-warning" >Sửa</a>
-                        <a href="{{url('users/delete/'.$users->id.'')}}" class="btn btn-danger" >Xóa</a>
+                        <a href="{{url('users/edit/'.$user->id.'')}}" class="btn btn-warning" >Sửa</a>
+                        <a href="{{url('users/delete/'.$user->id.'')}}" class="btn btn-danger" >Xóa</a>
                     </td>
                 </tr>
             </tbody>
