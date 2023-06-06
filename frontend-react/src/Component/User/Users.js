@@ -7,7 +7,10 @@ function Users() {
     const [user, setUser] = useState([]);
 
     useEffect(() => {
-        const getUser = () => {
+        getUser();
+    }, []);
+
+    const getUser = () => {
             fetch("http://pionero-laravel/api/users")
                 .then((res) => {
                     return res.json();
@@ -19,20 +22,6 @@ function Users() {
                     console.log(error);
                 });
         };
-        getUser();
-    }, []);
-
-    const fetchUsers = () => {
-        fetch("http://pionero-laravel/api/users")
-            .then((res) => res.json())
-            .then((response) => {
-                console.log(response.data);
-                setUser(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
 
     const deleteUser = (id) => {
         axios
@@ -40,7 +29,7 @@ function Users() {
             .then(function (response) {
                 console.log(response.data);
                 alert("Đã xóa User khỏi danh sách!");
-                fetchUsers();
+                getUser();
             })
             .catch(function (error) {
                 console.log(error);

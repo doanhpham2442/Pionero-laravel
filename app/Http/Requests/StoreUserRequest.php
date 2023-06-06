@@ -7,6 +7,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Response;
 
 class StoreUserRequest extends FormRequest
 {
@@ -35,6 +36,7 @@ class StoreUserRequest extends FormRequest
             ],
             'phone' => [
                 'required',
+                'digits:10'
             ],
             
             
@@ -48,6 +50,7 @@ class StoreUserRequest extends FormRequest
             'email.required' => 'Email không được để trống',
             'email.unique' => 'Email đã tồn tại',
             'phone.required' => 'Số điện thoại không được để trống',
+            'phone.digits' => 'Số điện thoại phải đủ 10 số và không được chứa kí tự khác',
         ];
     }
 
@@ -55,6 +58,6 @@ class StoreUserRequest extends FormRequest
     {
         throw new HttpResponseException(response()->json([
             'errors' => $validator->errors(),
-        ], JsonResponse::HTTP_NOT_FOUND));
+        ], Response::HTTP_BAD_REQUEST));
     }
 }

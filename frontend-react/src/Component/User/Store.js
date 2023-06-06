@@ -32,7 +32,12 @@ function Store() {
             if (error.response) {
                 // Lỗi từ phía API (có response từ server)
                 console.log(error.response.data.errors);
-                setMessageError("Error: " + error.response.data.errors.email);
+                if (error.response.data.errors && typeof error.response.data.errors === 'object') {
+                    const errorKeys = Object.keys(error.response.data.errors);
+                    errorKeys.forEach((key) => {
+                      setMessageError("Error: " + error.response.data.errors[key]);
+                    });
+                }
             } else if (error.request) {
                 // Lỗi không nhận được phản hồi từ server
                 console.log(error.request);
@@ -58,6 +63,12 @@ function Store() {
             method: "isEmpty",
             validWhen: false,
             message: "Bạn chưa điền trường Email.",
+        },
+        {
+            field: 'email',
+            method: 'isEmail',
+            validWhen: true,
+            message: 'Chưa đúng định dạng Email.',
         },
         {
             field: "phone",

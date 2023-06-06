@@ -39,10 +39,10 @@ class UserController extends Controller
         $token = null;
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['invalid_email_or_password'], 422);
+                return response()->json(['invalid_email_or_password'], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         } catch (JWTAuthException $e) {
-            return response()->json(['failed_to_create_token'], 500);
+            return response()->json(['failed_to_create_token'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return response()->json(compact('token'));
     }
@@ -63,7 +63,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if (!$user) {
-            return response()->json(['message' => 'Không tồn tại User'], 400);
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
         return response()->json(['data' => $user], Response::HTTP_OK);
     }
@@ -85,7 +85,7 @@ class UserController extends Controller
     {
         $user = User::find($id);
         if (!$user) {
-            return response()->json(['message' => 'Không tồn tại User'], 400);
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
         $update = User::where('id', $id)->update([
             'name' => $request->input('name'),
@@ -97,19 +97,19 @@ class UserController extends Controller
         
         return response()->json(['message' => 'Cập nhật thành công User'], Response::HTTP_OK);
     }
-
+    
     public function destroy($id)
     {  
         $user = User::find($id);
         if (!$user) {
-            return response()->json(['message' => 'Không tồn tại User'], 400);
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
         else{
             $deleted = User::destroy($id);
             if ($deleted) {
                 return response()->json(['message' => 'Xóa thành công User'], Response::HTTP_OK);
             } else {
-                return response()->json(['message' => 'Không tồn tại User'], 400);
+                return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
             }
         }
     }
