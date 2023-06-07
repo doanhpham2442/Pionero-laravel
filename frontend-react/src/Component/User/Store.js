@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import Validator from "../../utils/validator";
+import Validator from "../../Utils/Validator";
+import Rule from "../../Utils/Rules";
+import Path from "../../Path/Path-api";
+import axios from "../../Utils/Axios";
+
 function Store() {
     const [message_error, setMessageError] = useState("");
     const [message_success, setMessageSuccess] = useState("");
@@ -12,6 +15,17 @@ function Store() {
     const [txtphone, setPhone] = useState("");
     const [txtpassword, setPassword] = useState("");
 
+    const [errors, setErrors] = useState({});
+    const validator = new Validator(Rule);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const validationErrors = validator.validate({ name: txtname, email: txtemail, phone: txtphone });
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0) {
+            await uploadUser();
+        }
+    };
+
     const uploadUser = async () => {
         try {
             const formData = new FormData();
@@ -20,11 +34,14 @@ function Store() {
             formData.append("phone", txtphone);
             formData.append("password", txtpassword);
 
-            const response = await axios.post("http://pionero-laravel/api/users", formData, {
+            const response = await axios({
+                method: "post",
+                url: Path.USER_PATH,
+                data: formData,
                 headers: { "Content-Type": "multipart/form-data" },
             });
             console.log(response);
-            setMessageSuccess(response.data.message); //"message": "User successfully created."
+            setMessageSuccess(response.data.message);
             setTimeout(() => {
                 navigate("/users");
             }, 2000);
@@ -35,7 +52,7 @@ function Store() {
                 if (error.response.data.errors && typeof error.response.data.errors === 'object') {
                     const errorKeys = Object.keys(error.response.data.errors);
                     errorKeys.forEach((key) => {
-                      setMessageError("Error: " + error.response.data.errors[key]);
+                        setMessageError("Error: " + error.response.data.errors[key]);
                     });
                 }
             } else if (error.request) {
@@ -50,42 +67,6 @@ function Store() {
         }
     };
 
-    const [errors, setErrors] = useState({});
-    const rules = [
-        {
-            field: "name",
-            method: "isEmpty",
-            validWhen: false,
-            message: "Bạn chưa điền trường Name.",
-        },
-        {
-            field: "email",
-            method: "isEmpty",
-            validWhen: false,
-            message: "Bạn chưa điền trường Email.",
-        },
-        {
-            field: 'email',
-            method: 'isEmail',
-            validWhen: true,
-            message: 'Chưa đúng định dạng Email.',
-        },
-        {
-            field: "phone",
-            method: "isEmpty",
-            validWhen: false,
-            message: "Bạn chưa điền trường Phone.",
-        },
-    ];
-    const validator = new Validator(rules);
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const validationErrors = validator.validate({ name: txtname, email: txtemail, phone: txtphone });
-        setErrors(validationErrors);
-        if (Object.keys(validationErrors).length === 0) {
-            await uploadUser();
-        }
-    };
     return (
         <React.Fragment>
             <div className="container">

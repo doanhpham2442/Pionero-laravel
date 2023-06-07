@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-
-import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import Validator from "../../utils/validator";
+import Validator from "../../Utils/Validator";
+import Rules from "../../Utils/Rules";
+import Path from "../../Path/Path-api";
+import axios from "../../Utils/Axios";
 
 function Edit() {
     const navigate = useNavigate();
@@ -17,6 +18,34 @@ function Edit() {
         setInputs((values) => ({ ...values, [name]: value }));
     };
 
+    const getUser = async (id) => {
+        try {
+            const response = await axios({
+                method: "get",
+                url: Path.USER_DETAIL_PATH(id),
+            });
+            console.log(response.data);
+            setInputs(response.data.data);
+        } catch (error) {
+            console.log(error.response.data);
+            setMessageError("Error: " + error.response.data.message);
+            setTimeout(() => {
+                navigate("/users");
+            }, 1000);
+        }
+    };
+    
+    const [errors, setErrors] = useState({});
+    const validator = new Validator(Rules);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        const validationErrors = validator.validate({ name: inputs.name, email: inputs.email, phone: inputs.phone });
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length === 0) {
+            await uploadUser();
+        }
+    };
+
     const uploadUser = async () => {
         try {
             const formData = new FormData();
@@ -26,11 +55,14 @@ function Edit() {
             formData.append("phone", inputs.phone);
             formData.append("password", inputs.password);
 
-            const response = await axios.post("http://pionero-laravel/api/users/" + id, formData, {
+            const response = await axios({
+                method: "post",
+                url: Path.USER_DETAIL_PATH(id),
+                data: formData,
                 headers: { "Content-Type": "multipart/form-data" },
             });
-            setMessageSuccess(response.data.message);
             console.log(response);
+            setMessageSuccess(response.data.message);
             setTimeout(() => {
                 navigate("/users");
             }, 2000);
@@ -41,10 +73,9 @@ function Edit() {
                 if (error.response.data.errors && typeof error.response.data.errors === 'object') {
                     const errorKeys = Object.keys(error.response.data.errors);
                     errorKeys.forEach((key) => {
-                      setMessageError("Error: " + error.response.data.errors[key]);
+                        setMessageError("Error: " + error.response.data.errors[key]);
                     });
                 }
-                
             } else if (error.request) {
                 // Lỗi không nhận được phản hồi từ server
                 console.log(error.request);
@@ -57,64 +88,10 @@ function Edit() {
         }
     };
 
-    const [errors, setErrors] = useState({});
-    const rules = [
-        {
-            field: "name",
-            method: "isEmpty",
-            validWhen: false,
-            message: "Bạn chưa điền trường Name.",
-        },
-        {
-            field: "email",
-            method: "isEmpty",
-            validWhen: false,
-            message: "Bạn chưa điền trường Email.",
-        },
-        {
-            field: 'email',
-            method: 'isEmail',
-            validWhen: true,
-            message: 'Chưa đúng định dạng Email.',
-        },
-        {
-            field: "phone",
-            method: "isEmpty",
-            validWhen: false,
-            message: "Bạn chưa điền trường Phone.",
-        },
-
-    ];
-    const validator = new Validator(rules);
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        const validationErrors = validator.validate({ name: inputs.name, email: inputs.email, phone: inputs.phone });
-        setErrors(validationErrors);
-        if (Object.keys(validationErrors).length === 0) {
-            await uploadUser();
-        }
-    };
-
     useEffect(() => {
-        getUser();
+        getUser(id);
     }, []);
 
-    function getUser() {
-        axios
-            .get("http://pionero-laravel/api/users/" + id)
-            .then(function (response) {
-                console.log(response);
-                setInputs(response.data.data);
-            })
-            .catch(function (error) {
-                console.log(error.response.data);
-                setMessageError("Error: " + error.response.data.message);
-                setTimeout(() => {
-                    navigate("/users");
-                }, 1000);
-            });
-    }
     return (
         <React.Fragment>
             <div className="container">

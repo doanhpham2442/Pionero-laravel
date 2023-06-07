@@ -1,5 +1,4 @@
 import methods from 'validator';
-// import { methods } from 'validator';
 
 class Validator {
   constructor(rules) {

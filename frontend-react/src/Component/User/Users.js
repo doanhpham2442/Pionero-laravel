@@ -1,40 +1,42 @@
 import React, { useState, useEffect } from "react";
-
 import { Link } from "react-router-dom";
-import axios from "axios";
+import Path from "../../Path/Path-api";
+import axios from "../../Utils/Axios";
 
 function Users() {
     const [user, setUser] = useState([]);
 
+    const getUser = async () => {
+        try {
+          const response = await axios({
+            method: "get",
+            url: Path.USER_PATH,
+          });
+          console.log(response);
+          setUser(response.data.data);
+        } catch (error) {
+          console.log(error.response.data);
+        }
+    };
+
+    const deleteUser = async (id) => {
+        try {
+            const response = await axios({
+                method: "delete",
+                url: Path.USER_DETAIL_PATH(id),
+            });
+            console.log(response.data);
+            alert("Đã xóa User khỏi danh sách!");
+            getUser();
+        } catch (error) {
+            console.log(error.response.data);
+        }
+    };
+
+    
     useEffect(() => {
         getUser();
     }, []);
-
-    const getUser = () => {
-            fetch("http://pionero-laravel/api/users")
-                .then((res) => {
-                    return res.json();
-                })
-                .then((response) => {
-                    setUser(response.data);
-                })
-                .catch((error) => {
-                    console.log(error);
-                });
-        };
-
-    const deleteUser = (id) => {
-        axios
-            .delete("http://pionero-laravel/api/users/" + id)
-            .then(function (response) {
-                console.log(response.data);
-                alert("Đã xóa User khỏi danh sách!");
-                getUser();
-            })
-            .catch(function (error) {
-                console.log(error);
-            });
-    };
 
     return (
         <React.Fragment>
