@@ -118,7 +118,7 @@ class UserTest extends TestCase
         $user = User::factory()->create();
         $userData = [
             'name' => 'Updated Admin',
-            'email' => 'updateadmin@example.com',
+            'email' => 'updateadmin@gmail.com',
             'phone' => '0912345678',
             'password' => 'updatedpassword123',
         ];
