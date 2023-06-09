@@ -20,11 +20,12 @@ class UserController extends Controller
     public function __construct(){
     }
    
-    public function register(Request $request){
+    public function register(StoreUserRequest $request){
         $user = User::create([
           'name' => $request->get('name'),
           'email' => $request->get('email'),
           'password' => Hash::make($request->get('password')),
+          'phone' => $request->get('phone'),
         ]);
 
         return response()->json([
@@ -39,10 +40,10 @@ class UserController extends Controller
         $token = null;
         try {
             if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['invalid_email_or_password'], Response::HTTP_UNPROCESSABLE_ENTITY);
+                return response()->json(['message'=>'invalid_email_or_password'], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
         } catch (JWTAuthException $e) {
-            return response()->json(['failed_to_create_token'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message'=>'failed_to_create_token'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
         return response()->json(compact('token'));
     }
@@ -55,8 +56,11 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
+        if (!count($users)) {
+            return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
+        }
         $template = 'user.index';
-        return response()->json(['data' => $users], Response::HTTP_OK);
+        return response()->json(['data' => $users, 'message' => 'Xuất danh sách User thành công'], Response::HTTP_OK);
     }
     
     public function show($id)
@@ -65,7 +69,7 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(['message' => 'Không tồn tại User'], Response::HTTP_BAD_REQUEST);
         }
-        return response()->json(['data' => $user], Response::HTTP_OK);
+        return response()->json(['data' => $user,'message' => 'Xuất thông tin User thành công'], Response::HTTP_OK);
     }
 
     public function store(StoreUserRequest $request)
